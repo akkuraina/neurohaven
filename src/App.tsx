@@ -11,27 +11,85 @@ import Journal from "./pages/Journal";
 import Calmscapes from "./pages/Calmscapes";
 import CounselorCare from "./pages/CounselorCare";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
+
+// Protect certain routes (like dashboard)
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const { user } = useAuth();
+  if (!user) return <Login />;
+  return children;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/emotion-twin" element={<EmotionTwin />} />
-          <Route path="/peer-pods" element={<PeerPods />} />
-          <Route path="/journal" element={<Journal />} />
-          <Route path="/counselor" element={<CounselorCare />} />
-          <Route path="/calmscapes" element={<Calmscapes />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/emotion-twin"
+              element={
+                <ProtectedRoute>
+                  <EmotionTwin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/peer-pods"
+              element={
+                <ProtectedRoute>
+                  <PeerPods />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal"
+              element={
+                <ProtectedRoute>
+                  <Journal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/counselor"
+              element={
+                <ProtectedRoute>
+                  <CounselorCare />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/calmscapes"
+              element={
+                <ProtectedRoute>
+                  <Calmscapes />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-All */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
