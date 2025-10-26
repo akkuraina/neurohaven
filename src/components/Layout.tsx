@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Menu, X, Brain, Users, Calendar, BookOpen, Activity, MessageCircle } from "lucide-react";
+import UserAvatarMenu from "@/components/UserAvatarMenu";
 import { cn } from "@/lib/utils";
 import NotificationCenter from "./NotificationCenter";
 
@@ -61,22 +61,21 @@ export function Layout({ children }: LayoutProps) {
 
             {/* User Actions */}
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              {/* Notification Button */}
+              <Button
+                variant="ghost"
+                size="sm"
                 className="relative hover-glow"
                 onClick={() => setNotificationOpen(true)}
               >
                 <Bell className="w-4 h-4" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full"></span>
               </Button>
-              
-              <Avatar className="w-8 h-8 hover-lift">
-                <AvatarImage src="/placeholder-user.jpg" />
-                <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xs">JS</AvatarFallback>
-              </Avatar>
 
-              {/* Mobile menu button */}
+              {/* User Avatar */}
+              <UserAvatarMenu />
+
+              {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
                 size="sm"
