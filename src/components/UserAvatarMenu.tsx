@@ -10,6 +10,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function UserAvatarMenu() {
   const [editing, setEditing] = useState(false);
@@ -22,10 +24,15 @@ export default function UserAvatarMenu() {
     setEditing(false);
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-  };
-
+const handleLogout = async () => {
+  console.log("Logging out...");
+  try {
+    await signOut(auth);
+    console.log("Logged out successfully");
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
+};
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
