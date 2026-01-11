@@ -22,7 +22,7 @@ import {
 import { Link } from "react-router-dom"
 import { Layout } from "@/components/Layout"
 import SilentSOS from "@/components/SilentSOS"
-import { getAuth } from "firebase/auth"
+import { getAuth, signOut } from "firebase/auth"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -33,6 +33,9 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext";
+
 
 const quickStats = [
   { title: "Wellness Score", value: "84%", change: "+12%", icon: Activity, color: "text-success" },
@@ -54,6 +57,7 @@ const aiInsights = [
   { title: "Your sleep quality affects next-day mood significantly", suggestion: "Focus on your evening routine this week", confidence: 94 },
 ]
 
+
 export default function Dashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState("week")
   const [notifications, setNotifications] = useState([
@@ -69,6 +73,9 @@ export default function Dashboard() {
 
   const auth = getAuth()
   const user = auth.currentUser
+  const navigate = useNavigate()
+
+  const { setUser } = useAuth()
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -86,14 +93,6 @@ export default function Dashboard() {
     ? name.split(" ").map((n) => n[0]).join("").toUpperCase()
     : "U"
 
-  const handleSave = () => {
-    setEditing(false)
-  }
-
-  const handleLogout = () => {
-    auth.signOut()
-  }
-
   const handleNotificationAction = (id: number, action: string) => {
     if (action === "dismiss") {
       setNotifications((prev) => prev.filter((n) => n.id !== id))
@@ -108,12 +107,23 @@ export default function Dashboard() {
     console.log("SOS Alert triggered - emergency support initiated")
   }
 
+  const handleLogout = async () => {
+    await signOut(auth)
+    setUser(null)
+    navigate("/login")
+  }
+
+
+  // ---------------------------------------------------
+  // ✅ REAL DASHBOARD RETURN (Everything moved here)
+  // ---------------------------------------------------
   return (
     <Layout>
       <SilentSOS onEmergencyCall={handleSOSAlert} />
 
-      {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-serif font-semibold text-foreground mb-2">
             Welcome back, {user?.displayName || user?.email || "User"}
@@ -123,6 +133,7 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {quickStats.map((stat, index) => {
             const Icon = stat.icon
@@ -147,8 +158,13 @@ export default function Dashboard() {
           })}
         </div>
 
+        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
+
+            {/* Notifications */}
             <Card className="card-premium">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -210,6 +226,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
+
+            {/* Goals */}
             <Card className="card-warm">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -243,6 +261,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
+
+            {/* AI Insights */}
             <Card className="card-warm">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -270,20 +290,21 @@ export default function Dashboard() {
                         Apply
                       </Button>
                     </div>
-                    {index < aiInsights.length - 1 && (
-                      <hr className="border-border/30" />
-                    )}
+                    {index < aiInsights.length - 1 && <hr className="border-border/30" />}
                   </div>
                 ))}
               </CardContent>
             </Card>
 
+
+            {/* Quick Actions */}
             <Card className="card-premium">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  
                   <Link to="/emotion-twin">
                     <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                       <Brain className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -293,6 +314,7 @@ export default function Dashboard() {
                       </div>
                     </Button>
                   </Link>
+
                   <Link to="/journal">
                     <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                       <BookOpen className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -302,6 +324,7 @@ export default function Dashboard() {
                       </div>
                     </Button>
                   </Link>
+
                   <Link to="/calmscapes">
                     <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                       <Zap className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -311,6 +334,7 @@ export default function Dashboard() {
                       </div>
                     </Button>
                   </Link>
+
                   <Link to="/peer-pods">
                     <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                       <Users className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -320,6 +344,7 @@ export default function Dashboard() {
                       </div>
                     </Button>
                   </Link>
+
                   <Link to="/counselor">
                     <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                       <Calendar className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -329,6 +354,7 @@ export default function Dashboard() {
                       </div>
                     </Button>
                   </Link>
+
                   <Button variant="outline" className="w-full h-24 flex-col space-y-2 hover-lift group">
                     <Plus className="w-6 h-6 group-hover:scale-110 transition-transform" />
                     <div className="text-center">
@@ -339,8 +365,10 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
           </div>
 
+          {/* Right Column */}
           <div className="space-y-6">
             <Card className="card-premium">
               <CardHeader>
