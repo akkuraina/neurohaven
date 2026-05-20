@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    /* Primary Brand Colors - Warm Neutrals */
+    --background: 44 20% 97%;        /* Ivory */
+    --foreground: 25 15% 25%;        /* Deep taupe */
+    
+    /* Surface Colors */
+    --card: 44 25% 95%;              /* Soft ivory */
+    --card-foreground: 25 15% 25%;
+    
+    --popover: 44 25% 95%;
+    --popover-foreground: 25 15% 25%;
+    
+    /* Brand Colors */
+    --primary: 88 25% 45%;           /* Soft olive */
+    --primary-foreground: 44 20% 97%;
+    
+    --secondary: 35 15% 85%;         /* Muted beige */
+    --secondary-foreground: 25 15% 25%;
+    
+    --muted: 35 20% 92%;             /* Very light beige */
+    --muted-foreground: 25 10% 45%;
+    
+    --accent: 45 35% 75%;            /* Warm gold */
+    --accent-foreground: 25 15% 25%;
+    
+    /* Semantic Colors */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 44 20% 97%;
+    
+    --warning: 45 85% 60%;
+    --warning-foreground: 25 15% 25%;
+    
+    --success: 120 40% 45%;
+    --success-foreground: 44 20% 97%;
+    
+    /* UI Elements */
+    --border: 35 15% 88%;
+    --input: 35 15% 88%;
+    --ring: 88 25% 45%;
+    
+    --radius: 0.75rem;
+    
+    /* Custom Brand Variables */
+    --gold-accent: 45 55% 65%;       /* Subtle gold */
+    --olive-soft: 88 20% 55%;        /* Lighter olive */
+    --taupe-light: 25 10% 75%;       /* Light taupe */
+    --ivory-warm: 44 30% 98%;        /* Warmer ivory */
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--olive-soft)));
+    --gradient-warm: linear-gradient(180deg, hsl(var(--ivory-warm)), hsl(var(--muted)));
+    --gradient-gold: linear-gradient(45deg, hsl(var(--gold-accent)), hsl(var(--accent)));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.08);
+    --shadow-warm: 0 8px 32px hsl(var(--gold-accent) / 0.12);
+    --shadow-elegant: 0 12px 48px hsl(var(--foreground) / 0.06);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-elegant: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .dark {
+    /* Dark Mode - Soft Muted Palette */
+    --background: 25 15% 8%;           /* Deep warm black */
+    --foreground: 44 20% 92%;          /* Warm ivory */
+    
+    --card: 25 15% 12%;
+    --card-foreground: 44 20% 92%;
+    
+    --popover: 25 15% 12%;
+    --popover-foreground: 44 20% 92%;
+    
+    --primary: 88 20% 55%;             /* Muted olive */
+    --primary-foreground: 25 15% 8%;
+    
+    --secondary: 25 10% 20%;           /* Dark taupe */
+    --secondary-foreground: 44 20% 92%;
+    
+    --muted: 25 10% 15%;
+    --muted-foreground: 35 10% 65%;
+    
+    --accent: 45 25% 55%;              /* Muted gold */
+    --accent-foreground: 25 15% 8%;
+    
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 44 20% 92%;
+    
+    --warning: 45 65% 50%;
+    --warning-foreground: 25 15% 8%;
+    
+    --success: 120 30% 40%;
+    --success-foreground: 44 20% 92%;
+    
+    --border: 25 10% 22%;
+    --input: 25 10% 22%;
+    --ring: 88 20% 55%;
+    
+    /* Dark mode custom variables */
+    --gold-accent: 45 35% 45%;
+    --olive-soft: 88 15% 40%;
+    --taupe-light: 25 8% 45%;
+    --ivory-warm: 44 15% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+}
+
+@layer components {
+  /* Premium Button Variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-warm hover:shadow-elegant;
+    @apply transform hover:scale-[1.02] transition-all duration-300;
+  }
+  
+  .btn-ghost-gold {
+    @apply bg-transparent border border-accent/30 text-accent hover:bg-accent/10 hover:border-accent/50;
+  }
+  
+  .btn-minimal {
+    @apply bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground;
+    @apply backdrop-blur-sm transition-all duration-300;
+  }
+  
+  /* Card Variants */
+  .card-premium {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-soft;
+    @apply hover:shadow-warm transition-all duration-300;
+  }
+  
+  .card-warm {
+    @apply bg-gradient-to-br from-card to-muted/30 border border-accent/20 shadow-warm;
+  }
+  
+  /* Glass Effects */
+  .glass-effect {
+    @apply bg-background/70 backdrop-blur-md border border-border/30;
+  }
+  
+  /* Hover Animations */
+  .hover-lift {
+    @apply transform hover:-translate-y-1 hover:shadow-elegant transition-all duration-300;
+  }
+  
+  .hover-glow {
+    @apply hover:shadow-warm transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  /* Custom Gradients */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+  
+  /* Text Shadows */
+  .text-shadow-soft {
+    text-shadow: 0 2px 4px hsl(var(--foreground) / 0.1);
+  }
+  
+  /* Smooth Scrolling */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+}
