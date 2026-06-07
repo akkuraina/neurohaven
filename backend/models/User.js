@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     passwordHash: { type: String, default: null },
-    firebaseUid: { type: String, sparse: true, unique: true },
     name: { type: String, default: "" },
     wellnessScore: { type: Number, default: 50 },
     streak: { type: Number, default: 0 },

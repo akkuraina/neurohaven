@@ -3,9 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
-import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 
@@ -16,24 +14,11 @@ export default function LandingPage() {
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { user, loading, loginWithPassword, register, loginWithGoogle } = useAuth();
+  const { user, loading, loginWithPassword, register } = useAuth();
 
   useEffect(() => {
     if (!loading && user) navigate("/dashboard", { replace: true });
   }, [user, loading, navigate]);
-
-  const handleGoogleLogin = async () => {
-    setSubmitting(true);
-    try {
-      await loginWithGoogle();
-      navigate("/dashboard", { replace: true });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Google sign-in failed";
-      toast.error(message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,21 +103,6 @@ export default function LandingPage() {
                 {submitting ? "Please wait…" : isLogin ? "Login" : "Create Account"}
               </Button>
             </form>
-
-            <div className="my-4">
-              <Separator />
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              disabled={submitting}
-              className="w-full flex items-center justify-center gap-2"
-              onClick={handleGoogleLogin}
-            >
-              <FcGoogle className="text-xl" />
-              Continue with Google
-            </Button>
 
             <p
               className="mt-4 text-sm text-center text-[#1565C0] cursor-pointer hover:underline"

@@ -19,12 +19,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { authPost } from "@/lib/authApi";
+import { authPost, buildApiUrl } from "@/lib/authApi";
 import { formatLocalDayKey } from "@/lib/journalUtils";
 import type { CounselorDto, SessionBookingDto } from "@/types/counselor";
 import { toast } from "sonner";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const ALL_SLOTS = [
   "9:00 AM",
@@ -75,7 +74,7 @@ export default function CounselorCare() {
   const loadCounselors = useCallback(async () => {
     setLoadingCounselors(true);
     try {
-      const res = await fetch(`${API_BASE}/api/counselors`);
+      const res = await fetch(buildApiUrl("/api/counselors"));
       if (!res.ok) throw new Error("Failed to load counselors");
       const data = (await res.json()) as { counselors: CounselorDto[] };
       setCounselors(data.counselors || []);
@@ -98,7 +97,7 @@ export default function CounselorCare() {
     }
     const dayKey = formatLocalDayKey(selectedDate);
     setLoadingSlots(true);
-    fetch(`${API_BASE}/api/counselors/${selectedCounselor.id}/slots?date=${dayKey}`)
+    fetch(buildApiUrl(`/api/counselors/${selectedCounselor.id}/slots?date=${dayKey}`))
       .then((r) => r.json())
       .then((d: { bookedSlots?: string[] }) => setBookedSlots(d.bookedSlots || []))
       .catch(() => setBookedSlots([]))

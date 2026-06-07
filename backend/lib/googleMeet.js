@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 let calendarClient = null;
 
 function getCalendarAuth() {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!raw?.trim()) return null;
 
   try {
@@ -38,8 +38,8 @@ function getCalendar() {
 
 /**
  * Create a Calendar event with a Google Meet link (Calendar API conferenceData).
- * Requires GOOGLE_SERVICE_ACCOUNT_JSON (or FIREBASE_SERVICE_ACCOUNT_JSON) and optionally
- * GOOGLE_CALENDAR_ID (default "primary") + GOOGLE_CALENDAR_IMPERSONATE_EMAIL for Workspace.
+ * Requires GOOGLE_SERVICE_ACCOUNT_JSON and optionally GOOGLE_CALENDAR_ID (default "primary")
+ * plus GOOGLE_CALENDAR_IMPERSONATE_EMAIL for Workspace.
  */
 export async function createGoogleMeetLink({
   summary,

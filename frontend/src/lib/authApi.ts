@@ -1,6 +1,19 @@
 import type { AuthUser } from "@/types/auth";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_BASE = normalizeBase(import.meta.env.VITE_API_URL || "http://localhost:3001");
+
+function normalizeBase(base: string): string {
+  return base.replace(/\/+$/, "");
+}
+
+function normalizePath(path: string): string {
+  if (!path.startsWith("/")) return `/${path}`;
+  return path;
+}
+
+export function buildApiUrl(path: string): string {
+  return `${API_BASE}${normalizePath(path)}`;
+}
 
 export const AUTH_TOKEN_KEY = "neurohaven_token";
 
@@ -20,7 +33,7 @@ export function clearStoredToken() {
 export async function fetchMe(): Promise<AuthUser | null> {
   const token = getStoredToken();
   if (!token) return null;
-  const res = await fetch(`${API_BASE}/api/auth/me`, {
+  const res = await fetch(buildApiUrl("/api/auth/me"), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (res.status === 401) return null;
@@ -38,7 +51,7 @@ export async function authPost<TBody extends object>(
     const t = getStoredToken();
     if (t) headers.Authorization = `Bearer ${t}`;
   }
-  return fetch(`${API_BASE}${path}`, {
+  return fetch(buildApiUrl(path), {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -49,5 +62,5 @@ export async function authFetch(path: string, init: RequestInit = {}): Promise<R
   const token = getStoredToken();
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  return fetch(`${API_BASE}${path}`, { ...init, headers });
+  return fetch(buildApiUrl(path), { ...init, headers });
 }

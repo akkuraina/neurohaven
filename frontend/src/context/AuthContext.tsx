@@ -6,10 +6,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { auth, provider } from "../firebase";
-import { authPost, clearStoredToken, fetchMe, getStoredToken, setStoredToken } from "@/lib/authApi";
-import type { AuthUser } from "@/types/auth";
+import { authPost, clearStoredToken, fetchMe, getStoredToken, setStoredToken } from "../lib/authApi";
+import type { AuthUser } from "../types/auth";
 
 export type { AuthUser };
 
@@ -18,7 +16,6 @@ interface AuthContextValue {
   loading: boolean;
   loginWithPassword: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -30,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    let unsubFirebase: (() => void) | undefined;
 
     const bootstrap = async () => {
       const token = getStoredToken();
@@ -49,33 +45,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
         clearStoredToken();
       }
-
-      unsubFirebase = onAuthStateChanged(auth, async (fbUser) => {
-        if (cancelled) return;
-        if (fbUser) {
-          try {
-            const idToken = await fbUser.getIdToken();
-            const res = await authPost("/api/auth/google", { idToken }, false);
-            const body = (await res.json().catch(() => ({}))) as { token?: string; user?: AuthUser; error?: string };
-            if (res.ok && body.token && body.user) {
-              setStoredToken(body.token);
-              setUser(body.user);
-            } else {
-              console.error("Google session sync failed:", body.error || res.statusText);
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        if (!cancelled) setLoading(false);
-      });
+      if (!cancelled) setLoading(false);
     };
 
     void bootstrap();
 
     return () => {
       cancelled = true;
-      unsubFirebase?.();
     };
   }, []);
 
@@ -86,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!body.token || !body.user) throw new Error("Invalid server response");
     setStoredToken(body.token);
     setUser(body.user);
-    await signOut(auth).catch(() => {});
   }, []);
 
   const register = useCallback(async (email: string, password: string, name?: string) => {
@@ -96,25 +71,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!body.token || !body.user) throw new Error("Invalid server response");
     setStoredToken(body.token);
     setUser(body.user);
-    await signOut(auth).catch(() => {});
-  }, []);
-
-  const loginWithGoogle = useCallback(async () => {
-    const cred = await signInWithPopup(auth, provider);
-    const idToken = await cred.user.getIdToken();
-    const res = await authPost("/api/auth/google", { idToken }, false);
-    const body = (await res.json().catch(() => ({}))) as { token?: string; user?: AuthUser; error?: string };
-    if (!res.ok) {
-      await signOut(auth).catch(() => {});
-      throw new Error(body.error || "Google sign-in failed");
-    }
-    if (!body.token || !body.user) throw new Error("Invalid server response");
-    setStoredToken(body.token);
-    setUser(body.user);
   }, []);
 
   const logout = useCallback(async () => {
-    await signOut(auth).catch(() => {});
     clearStoredToken();
     setUser(null);
   }, []);
@@ -124,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     loginWithPassword,
     register,
-    loginWithGoogle,
     logout,
   };
 

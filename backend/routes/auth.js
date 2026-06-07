@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { signJwt } from "../lib/jwt.js";
 import { requireAuth } from "../middleware/requireAuth.js";
-import { verifyFirebaseIdToken, isFirebaseAdminReady } from "../lib/firebaseAdmin.js";
 
 const router = express.Router();
 
@@ -77,68 +76,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/google", async (req, res) => {
-  try {
-    if (!isFirebaseAdminReady()) {
-      return res.status(503).json({
-        error:
-          "Google sign-in is not configured. Set FIREBASE_SERVICE_ACCOUNT_JSON on the server.",
-      });
-    }
-
-    const { idToken } = req.body;
-    if (!idToken || typeof idToken !== "string") {
-      return res.status(400).json({ error: "idToken is required" });
-    }
-
-    const decoded = await verifyFirebaseIdToken(idToken);
-    const uid = decoded.uid;
-    const emailRaw = decoded.email;
-    if (!emailRaw) {
-      return res.status(400).json({ error: "Google account has no email address" });
-    }
-
-    const emailNorm = String(emailRaw).toLowerCase().trim();
-    const displayName =
-      (decoded.name && String(decoded.name).trim()) ||
-      emailNorm.split("@")[0];
-
-    let user = await User.findOne({
-      $or: [{ firebaseUid: uid }, { email: emailNorm }],
-    });
-
-    if (!user) {
-      user = await User.create({
-        email: emailNorm,
-        firebaseUid: uid,
-        name: displayName,
-      });
-    } else {
-      if (user.firebaseUid && user.firebaseUid !== uid) {
-        return res.status(409).json({
-          error: "This email is already linked to a different Google account",
-        });
-      }
-      if (!user.firebaseUid) {
-        user.firebaseUid = uid;
-        if (!user.name && displayName) user.name = displayName;
-        await user.save();
-      } else if (displayName && displayName !== user.name) {
-        user.name = displayName;
-        await user.save();
-      }
-    }
-
-    const token = signJwt(user);
-    return res.json({ token, user: sanitizeUser(user) });
-  } catch (err) {
-    if (err?.code === "firebase_admin_not_configured") {
-      return res.status(503).json({ error: "Google sign-in is not configured on the server" });
-    }
-    console.error("google:", err);
-    return res.status(401).json({ error: "Invalid Google token" });
-  }
-});
 
 router.get("/me", requireAuth, async (req, res) => {
   try {

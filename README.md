@@ -8,9 +8,9 @@ Mental health wellness platform with journaling, counselor booking, and supporti
 
 ## Tech stack
 
-- Frontend: React 18, Vite, TypeScript, Tailwind, shadcn/ui, Firebase Auth
+- Frontend: React 18, Vite, TypeScript, Tailwind, shadcn/ui
 - Backend: Node.js, Express 5, MongoDB (Mongoose), JWT auth
-- Integrations: Firebase Admin (Google sign-in verification), Google Calendar/Meet
+- Integrations: Google Calendar/Meet
 
 ## Project structure (indexed)
 
@@ -23,7 +23,6 @@ neurohaven-main/
     package-lock.json
     lib/
       bookingTime.js
-      firebaseAdmin.js
       googleMeet.js
       jwt.js
       seedCounselors.js
@@ -60,7 +59,6 @@ neurohaven-main/
       main.tsx
       index.css
       App.css
-      firebase.ts
       vite-env.d.ts
       assets/
       components/
@@ -95,7 +93,6 @@ neurohaven-main/
 ## Features
 
 - Email/password auth with JWT
-- Google sign-in via Firebase Auth and Firebase Admin verification
 - Journal entries per day with mood tracking
 - Counselor discovery and booking with availability checks
 - Optional Google Meet link creation for video sessions
@@ -107,7 +104,6 @@ neurohaven-main/
 - Auth:
   - `POST /api/auth/register`
   - `POST /api/auth/login`
-  - `POST /api/auth/google`
   - `GET /api/auth/me`
 - Journal:
   - `GET /api/journal`
@@ -138,7 +134,6 @@ MONGO_URI=mongodb://127.0.0.1:27017/neurohaven
 JWT_SECRET=replace-with-a-long-random-string-in-production
 JWT_EXPIRES_IN=7d
 CLIENT_ORIGIN=http://localhost:5000
-# FIREBASE_SERVICE_ACCOUNT_JSON={...}
 # GOOGLE_SERVICE_ACCOUNT_JSON={...}
 # GOOGLE_CALENDAR_ID=primary
 # GOOGLE_CALENDAR_IMPERSONATE_EMAIL=counselor@yourdomain.com
@@ -151,12 +146,7 @@ Create `frontend/.env`:
 
 ```
 VITE_API_URL=http://localhost:3001
-VITE_FIREBASE_API_KEY=your_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
+
 ```
 
 ## Setup (Git Bash on Windows)
@@ -189,5 +179,4 @@ Frontend runs on `http://localhost:5000`.
 ## Notes
 
 - Counselor data is auto-seeded on first backend start if the collection is empty.
-- Google sign-in requires Firebase Admin service account JSON on the backend and Firebase web config on the frontend.
 - Google Meet link creation requires Calendar API access; a fallback link is used if configured but no Meet link is returned.
