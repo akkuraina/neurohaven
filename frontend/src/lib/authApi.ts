@@ -3,7 +3,8 @@ import type { AuthUser } from "@/types/auth";
 const API_BASE = normalizeBase(import.meta.env.VITE_API_URL || "http://localhost:3001");
 
 function normalizeBase(base: string): string {
-  return base.replace(/\/+$/, "");
+  const first = base.split(",")[0].trim();
+  return first.replace(/\/+$/, "");
 }
 
 function normalizePath(path: string): string {
